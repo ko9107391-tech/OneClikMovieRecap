@@ -1,0 +1,28 @@
+<!doctype html><html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111318"><link rel="manifest" href="/static/manifest.json"><title>One Click AI</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0d0f13;color:#fff;font-family:system-ui,sans-serif}.wrap{max-width:720px;margin:auto;padding:20px}
+.card{background:#171a21;border:1px solid #292e38;border-radius:24px;padding:22px;box-shadow:0 15px 45px #0007}
+h1{margin:0 0 5px;font-size:28px}.sub{color:#aeb5c1;margin-bottom:20px}.box{padding:18px;margin:12px 0;border:1px solid #303642;border-radius:16px}
+label{display:block;font-weight:700;margin-bottom:8px}input{width:100%}button{width:100%;padding:16px;border:0;border-radius:14px;font-weight:800;font-size:16px;background:#fff;color:#111;margin-top:10px}
+#status{white-space:pre-wrap;margin-top:16px}.links a{display:block;color:#fff;padding:10px 0}
+.small{font-size:13px;color:#9ba3b1}
+</style></head><body><div class="wrap"><div class="card">
+<h1>🎬 One Click AI</h1><div class="sub">Movie Recap • Burmese • One Click</div>
+<div class="box"><label>① Movie Video</label><input id="video" type="file" accept="video/*"></div>
+<div class="box"><label>② Burmese Voice (Runway)</label><input id="voice" type="file" accept="audio/*"><div class="small">Runway ကထုတ်ထားတဲ့ narration ကိုထည့်နိုင်ပါတယ်။ မထည့်ရင် AI TTS သုံးပါမယ်။</div></div>
+<button onclick="go()">🚀 ONE CLICK GENERATE</button><div id="status"></div><div class="links" id="links"></div>
+</div></div>
+<script>
+if("serviceWorker" in navigator) navigator.serviceWorker.register("/static/sw.js");
+async function go(){
+ const v=document.getElementById("video").files[0], a=document.getElementById("voice").files[0], st=document.getElementById("status");
+ if(!v){st.textContent="Movie video ရွေးပါ။";return}
+ st.textContent="⏳ Scene analysis + narration sync လုပ်နေပါတယ်...";
+ const fd=new FormData();fd.append("video",v);if(a)fd.append("voice",a);
+ try{const r=await fetch("/generate",{method:"POST",body:fd}),j=await r.json();if(!r.ok)throw Error(j.error);
+ st.textContent="✅ ပြီးပါပြီ";document.getElementById("links").innerHTML=
+ `<a href="${j.video}">⬇️ Final Recap MP4</a><a href="${j.srt}">⬇️ Burmese SRT</a><a href="${j.plan}">⬇️ Scene Plan</a>`;
+ }catch(e){st.textContent="❌ "+e.message}
+}
+</script></body></html>
